@@ -1,0 +1,11 @@
+### HELLO
+GET http://localhost:8080/auth/hello
+Authorization: Basic test tes
+
+### HELLO SECURED
+GET http://localhost:8080/auth/hello-secured
+Authorization: Basic test-3 test-3
+
+### HELLO SECURED TWO
+GET http://localhost:8080/auth/hello-secured-2
+Authorization: Basic test-3 test-3

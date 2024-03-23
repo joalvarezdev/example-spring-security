@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: spring-security
+
+  datasource:
+    url: jdbc:postgresql://localhost/test
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+  # TODO eliminar esto
+  security:
+    user:
+      name: test
+      password: test
