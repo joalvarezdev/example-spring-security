@@ -10,6 +10,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +24,7 @@ public class SpringSecurityExampleApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(PrincipalUserRepository repository) {
+	CommandLineRunner init(PrincipalUserRepository repository, PasswordEncoder bcrypt) {
 		return args -> {
 			var create = new Permission(Permissions.CREATE);
 			var read = new Permission(Permissions.READ);
@@ -34,9 +36,9 @@ public class SpringSecurityExampleApplication {
 			var invitedRole = new Role(Roles.INVITED, Set.of(read));
 			var devRole = new Role(Roles.DEVELOPER, Set.of(read, update, delete));
 
-			var adminUser = new PrincipalUser("deppe", "deppe", true, false, false, false, Set.of(adminRole, devRole));
-			var user = new PrincipalUser("user", "user", true, false, false, false, Set.of(userRole));
-			var invited = new PrincipalUser("invited", "invited", true, false, false, false, Set.of(invitedRole));
+			var adminUser = new PrincipalUser("deppe", bcrypt.encode("deppe"), true, false, false, false, Set.of(adminRole, devRole));
+			var user = new PrincipalUser("user", bcrypt.encode("user"), true, false, false, false, Set.of(userRole));
+			var invited = new PrincipalUser("invited", bcrypt.encode("invited"), true, false, false, false, Set.of(invitedRole));
 
 			repository.saveAll(List.of(adminUser, user, invited));
 		};
