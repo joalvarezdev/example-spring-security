@@ -19,3 +19,9 @@ spring:
     user:
       name: test
       password: test
+
+
+jwt:
+  secret-key: 69fb9d2c3e12133862baaace3be85a297a5c6302c04e7b0862cc950f019bdbae
+  user-generator: AUTHOJWT-BACKEND
+  token-expiration: 3_600_000

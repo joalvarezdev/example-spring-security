@@ -1,5 +1,7 @@
 package com.joalvarez.springsecurity.config;
 
+import com.joalvarez.springsecurity.config.jwt.JwtTokenFilter;
+import com.joalvarez.springsecurity.config.jwt.Jwts;
 import com.joalvarez.springsecurity.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +16,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+	private final Jwts utils;
+
+	public SecurityConfig(Jwts utils) {
+		this.utils = utils;
+	}
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,6 +47,7 @@ public class SecurityConfig {
 				// * Configuracion por defecto para los demas endpoints
 				request.anyRequest().denyAll();
 			})
+			.addFilterBefore(new JwtTokenFilter(utils), BasicAuthenticationFilter.class)
 			.build();
 	}
 
