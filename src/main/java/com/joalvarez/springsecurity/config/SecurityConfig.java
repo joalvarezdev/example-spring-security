@@ -39,10 +39,12 @@ public class SecurityConfig {
 			.authorizeHttpRequests(request -> {
 
 				// * Configurar endpoints publicos
-				request.requestMatchers(HttpMethod.GET, "/auth/hello").permitAll();
+				request.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
+
+				request.requestMatchers(HttpMethod.GET, "/test/hello").permitAll();
 
 				// * Configurar endpoints privados
-				request.requestMatchers(HttpMethod.GET, "/auth/hello-secured").hasAuthority("READ");
+				request.requestMatchers(HttpMethod.GET, "/test/hello-secured").hasAuthority("READ");
 
 				// * Configuracion por defecto para los demas endpoints
 				request.anyRequest().denyAll();

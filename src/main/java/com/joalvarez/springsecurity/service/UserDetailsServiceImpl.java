@@ -16,7 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -59,10 +63,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		SecurityContextHolder.getContext().setAuthentication(this.authenticate(dto.username(), dto.password()));
 
 		var token = this.utils.generateToken(SecurityContextHolder.getContext().getAuthentication());
+		var millis = Long.parseLong(this.utils.getSpecificClaim(token, "expiration").toString());
+		var expiration = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toInstant();
+		System.out.println(expiration);
 
 		return new TokenDTO(
 			this.utils.getUsername(token),
-			token
+			token,
+			LocalDateTime.ofInstant(expiration, ZoneId.systemDefault())
 		);
 	}
 

@@ -26,13 +26,9 @@ public class Jwts {
 	private String userGenerator;
 	@Value("${jwt.token-expiration:1_800_000}")
 	private long expirationTime;
-	private final Algorithm algorithm;
-
-	public Jwts() {
-		this.algorithm = Algorithm.HMAC256(this.secretKey);
-	}
 
 	public String generateToken(Authentication authentication) {
+		var algorithm = Algorithm.HMAC256(this.secretKey);
 
 		var username = authentication.getPrincipal().toString();
 		var authorities = authentication.getAuthorities()
@@ -41,22 +37,25 @@ public class Jwts {
 			.collect(Collectors.joining(","));
 
 		var currentDate = Instant.now().atZone(ZoneId.systemDefault()).toInstant();
+		var expiration = currentDate.plus(this.expirationTime, ChronoUnit.MILLIS);
 
 		return JWT.create()
 			.withIssuer(this.userGenerator)
 			.withSubject(username)
 			.withClaim("authorities", authorities)
+			.withClaim("expiration", expiration.toEpochMilli())
 			.withIssuedAt(currentDate)
-			.withExpiresAt(currentDate.plus(this.expirationTime, ChronoUnit.MILLIS))
+			.withExpiresAt(expiration)
 			.withJWTId(UUID.randomUUID().toString())
 			.withNotBefore(currentDate)
-			.sign(this.algorithm);
+			.sign(algorithm);
 	}
 
 	public void validateToken(String token) {
-		try {
+		var algorithm = Algorithm.HMAC256(this.secretKey);
 
-			var verifier = JWT.require(this.algorithm)
+		try {
+			var verifier = JWT.require(algorithm)
 				.withIssuer(this.userGenerator)
 				.build();
 
